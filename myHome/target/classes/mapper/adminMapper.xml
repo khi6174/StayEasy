@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="adminMapper">
+<update id="updateMember" parameterType="model.User">
+update user_info set user_pwd = #{user_pwd}, 
+	addr = #{addr}, phone = #{phone}, grade = #{grade}
+where user_id = #{user_id}
+</update>
+<select id="findMemberById" parameterType="String" resultType="model.User">
+select user_id,user_pwd,name,addr,phone,gender,grade,email,birth,job
+from user_info where user_id = #{id}
+</select>
+<select id="findMemberCount" parameterType="model.User" resultType="Integer">
+select count(*)	from user_info where 1=1
+	<choose>
+		<when test="user_id != ''">and user_id = #{user_id}</when>
+		<when test="name != ''">and name like '%' || #{name} || '%'</when>
+		<when test="addr != ''">and addr like '%' || #{addr} || '%'</when>
+		<when test="email != ''">and email like '%' || #{email} || '%'</when>
+	</choose>
+</select>
+<select id="findMember" parameterType="model.User" resultType="model.User">
+select user_id,user_pwd,name,addr,phone,gender,grade,email,birth,job
+from(select rownum rank, a.*
+	from	(select user_id, user_pwd, name, addr, phone, gender, grade,
+			email, to_char(birth,'YYYY-MM-DD') as birth, job
+		from user_info where 1=1
+	<choose>
+		<when test="user_id != ''">and user_id = #{user_id}</when>
+		<when test="name != ''">and name like '%' || #{name} || '%'</when>
+		<when test="addr != ''">and addr like '%' || #{addr} || '%'</when>
+		<when test="email != ''">and email like '%' || #{email} || '%'</when>
+	</choose>
+		) a
+)
+where rank > #{start} and rank <![CDATA[<]]> #{end}
+</select>
+<select id="findMember_" parameterType="model.User" resultType="model.User">
+	select user_id, user_pwd, name, addr, phone, gender, grade,
+		email, to_char(birth,'YYYY-MM-DD'), job
+	from user_info where 1=1
+	<choose>
+		<when test="user_id != ''">and user_id = #{user_id}</when>
+		<when test="name != ''">and name like '%' || #{name} || '%'</when>
+		<when test="addr != ''">and addr like '%' || #{addr} || '%'</when>
+		<when test="email != ''">and email like '%' || #{email} || '%'</when>
+	</choose>
+</select>
+<select id="getOrdersByStateCount" resultType="Integer">
+	select count(*)
+		from sales_tbl s, sales_detail_tbl d 
+		where s.sale_id = d.sale_id and d.delivery_state = #{state}
+		order by s.user_id, s.sale_id
+</select>
+<select id="getOrdersByState" parameterType="model.StartEnd" 
+								resultType="admin.OrderModify">
+select user_id,sale_id,sale_time,sale_detail_id,item_id,quantity,delivery_state
+from (select rownum rank, a.*
+	from(select s.user_id, s.sale_id, s.sale_time,
+		d.sale_detail_id, d.item_id,
+		d.quantity, d.delivery_state
+		from sales_tbl s, sales_detail_tbl d 
+			where s.sale_id = d.sale_id and d.delivery_state = #{state}
+			order by s.user_id, s.sale_id) a)
+where rank > #{start} and rank <![CDATA[<]]> #{end}
+</select>
+<select id="getTotalOrders" resultType="Integer">
+select count(*)	from sales_tbl s, sales_detail_tbl d 
+			where s.sale_id = d.sale_id 
+</select>
+<select id="getAllOrders" parameterType="model.StartEnd"
+		resultType="admin.OrderModify">
+select user_id,sale_id,sale_time,sale_detail_id,item_id,quantity,delivery_state
+from (select rownum rank, a.*
+	from(select s.user_id, s.sale_id, s.sale_time,
+		d.sale_detail_id, d.item_id,
+		d.quantity, d.delivery_state
+		from sales_tbl s, sales_detail_tbl d 
+			where s.sale_id = d.sale_id order by s.user_id, s.sale_id) a)
+where rank > #{start} and rank <![CDATA[<]]> #{end}
+</select>
+<update id="modifyOrderState" parameterType="admin.OrderModify">
+update sales_detail_tbl set delivery_state = #{state} 
+	where sale_id = #{sale_id} and sale_detail_id = #{sale_detail_id} 
+	and sale_id = (select sale_id from sales_tbl 
+				where user_id = #{user_id}	and sale_id = #{sale_id})
+</update>
+<select id="getSalesInfoById" parameterType="String"
+	resultType="admin.SalesInfoById">
+	select s.user_id, s.sale_id, s.sale_time,d.sale_detail_id, d.item_id,
+		d.quantity, d.delivery_state
+	from sales_tbl s, sales_detail_tbl d
+	where s.sale_id = d.sale_id	and s.user_id = #{id}
+</select>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="itemMapper">
+	<select id="getItemByName" parameterType="model.StartEnd" resultType="model.Item">
+	select item_code, item_title, price, madein, reg_date, item_spec
+	from (select rownum rank, a.*
+		from	(select item_code, item_title, price, madein , 
+				to_char(reg_date,'YYYY-MM-DD') as reg_date,	item_spec 
+			from sellingitems_tbl 
+			where item_title like '%' || #{name} || '%') a )
+	where rank > #{start} and rank <![CDATA[<]]> #{end}
+	</select>
+	<select id="getItemCountByName" parameterType="String" resultType="Integer">
+	select count(*)
+	from sellingitems_tbl 
+	where item_title like '%' || #{name} || '%'	
+	</select>
+	<delete id="deleteCart" parameterType="String">
+	delete from cart_tbl where id = #{id}
+	</delete>
+	<update id="updateItem" parameterType="model.Item">
+	update sellingitems_tbl set item_title=#{item_title}, madein=#{madein}, 
+			item_spec=#{item_spec}, price=#{price} where item_code = #{item_code}
+	</update>
+	<delete id="deleteItem" parameterType="String">
+	delete from sellingitems_tbl where item_code = #{code}
+	</delete>
+
+	<select id="getItem" parameterType="String" resultType="model.Item">
+	select item_code, item_title, price, madein , 
+		to_char(reg_date,'YYYY-MM-DD') "reg_date",	item_spec 
+	from sellingitems_tbl where item_code = #{code}
+	</select>
+
+	<select id="getTotalItems" resultType="Integer">
+	select count(*) from sellingitems_tbl
+	</select>
+
+	<select id="getItems" parameterType="model.StartEnd" resultType="model.Item">
+	select item_code,item_title,price,
+			madein, regdate "reg_date"
+	from( select rownum rn, a.*
+	        from (select item_code,item_title,price,madein,
+	                to_char(reg_date,'YYYY/MM/DD') regdate  from sellingitems_tbl) a
+	       )
+	where rn > #{start} and rn <![CDATA[<]]> #{end}
+	</select>
+
+	<select id="getNations" resultType="model.Nation">
+	select * from madein_tbl
+	</select>
+	<select id="getCodeDup" resultType="Integer" parameterType="String">
+	select count(*) from sellingitems_tbl where item_code=#{code}
+	</select>
+	<insert id="putItems" parameterType="model.Item">
+	insert into sellingitems_tbl values(#{item_code},#{item_title},#{price},
+		#{item_spec},sysdate,#{madein})
+	</insert>
+</mapper>

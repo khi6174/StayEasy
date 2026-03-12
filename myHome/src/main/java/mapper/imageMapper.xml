@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="imageMapper">
+	<update id="updateOrderNo" parameterType="model.Imagebbs">
+		update imagebbs_tbl set order_no = order_no + 1
+		where group_id = #{group_id} and order_no >= #{order_no}
+	</update>
+	<update id="updateImageBBS" parameterType="model.Imagebbs">
+		update imagebbs_tbl set title=#{title}, 
+		content=#{content}, imagename=#{imagename} 
+		where w_id=#{w_id}
+	</update>
+	<delete id="deleteImageBBS" parameterType="Integer">
+		delete from imagebbs_tbl where w_id = #{id}
+	</delete>
+	<select id="getReplyCount" parameterType="Integer" resultType="Integer">
+	select count(*) from imagebbs_tbl where parent_id = #{id}
+	</select>
+	<select id="getImageDetail" parameterType="Integer" resultType="model.Imagebbs">
+		select w_id, group_id, parent_id, order_no, 
+			title, writer, to_char(w_date,'YYYY/MM/DD HH24:MI:SS') as w_date,
+			imagename, content, password from imagebbs_tbl where w_id = #{id}	
+	</select>
+	<select id="getTotal" resultType="Integer">
+		select count(*) from imagebbs_tbl
+	</select>
+	<select id="imageList" parameterType="model.StartEnd" resultType="model.Imagebbs">
+		select w_id, title, writer, w_date, imagename
+		from (select rownum rank, a.*
+		        from(
+		        	select w_id, title, writer, 
+			     	to_char(w_date,'YYYY/MM/DD HH24:MI:SS') as "W_DATE", imagename
+			     	from imagebbs_tbl 
+			     	order by group_id desc, order_no asc
+			     	) a)
+		where rank > #{start} and rank <![CDATA[<]]> #{end}	
+	</select>
+
+	<select id="getMaxWid" resultType="Integer">
+		select max(w_id) from imagebbs_tbl
+	</select>
+	<insert id="putImagebbs" parameterType="model.Imagebbs">
+		insert into imagebbs_tbl values(#{w_id},#{group_id},#{parent_id},#{order_no},
+			#{title},#{content},#{writer},sysdate,#{imagename},#{password})
+	</insert>
+</mapper>

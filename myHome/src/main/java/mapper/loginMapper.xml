@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="loginMapper">
+	<select id="getUserInfo" parameterType="String" 
+				resultType="model.User">
+	select user_id, user_pwd, name, addr, phone, gender,
+	grade, email, to_char(birth,'YYYY-MM-DD') "birth", job
+	from user_info where user_id = #{id}
+	</select>
+	<insert id="putUser" parameterType="model.User">
+	insert into user_info values(#{user_id},#{user_pwd},
+	#{name},#{addr},#{phone},#{gender},0,#{email},
+	to_date(#{birth},'YYYY/MM/DD'), #{job})
+	</insert>
+	<select id="getUser" parameterType="model.LoginUser" resultType="model.LoginUser">
+	select user_id "id", user_pwd "password" from user_info
+	where user_id = #{id} and user_pwd = #{password}
+	</select>
+</mapper>

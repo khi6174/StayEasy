@@ -1,0 +1,17 @@
+# Maven
+target/
+
+# Eclipse / STS
+.project
+.classpath
+.settings/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IntelliJ
+*.iml

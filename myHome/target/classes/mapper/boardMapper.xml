@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardMapper">
+	<select id="getTotalCount" resultType="Integer">
+		select count(*) from free_board
+	</select>
+	<update id="updateBoard" parameterType="model.Board">
+		update free_board set title=#{title}, content=#{content} where seq=#{seq}
+	</update>
+	<delete id="deleteBoard" parameterType="Integer">
+		delete from free_board where seq = #{seq}
+	</delete>
+	<select id="getBoard" parameterType="Integer" resultType="model.Board">
+		select seq,id,title,content,to_char(write_date,'YYYY/MM/DD') "write_date"
+		from free_board where seq= #{no}
+	</select>
+	<select id="getBoardList" resultType="model.Board" 
+					parameterType="model.StartEnd">
+		select seq, id , title, w_date "write_date"
+		from(select rownum rn, a.*
+		       from(select seq,id,title,to_char(write_date,'YYYY/MM/DD') "W_DATE"
+	                          from free_board order by seq desc) a)
+		where rn > #{start} and rn <![CDATA[<]]> #{end}
+	</select>
+	<select id="getMaxSeq" resultType="Integer">
+	select max(seq) from free_board
+	</select>
+	<insert id="putBoard" parameterType="model.Board">
+	insert into free_board values(#{id},#{title},#{content},sysdate,#{seq})
+	</insert>
+</mapper>
