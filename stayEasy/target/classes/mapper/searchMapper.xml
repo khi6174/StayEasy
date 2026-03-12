@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="searchMapper">
+	<select id="getAccListByCon" parameterType="map" resultType="model.Accommodation">
+	SELECT *
+	FROM (
+		SELECT rownum rank, a.*
+		FROM (
+			SELECT acc.*
+			FROM bb_acc_tbl acc, bb_cate_tbl cat
+			WHERE acc.category_id = cat.category_id
+				AND acc.accommodation_id IN (
+					SELECT DISTINCT room.accommodation_id
+					FROM bb_room_tbl room
+					WHERE acc.accommodation_id = room.accommodation_id
+						AND (acc.accname LIKE '%' || #{NAME} || '%' OR acc.location LIKE '%' || #{LOC} || '%')
+						AND acc.category_id = #{TYPE}
+						AND room.capacity >= #{CAPA}
+						AND NOT EXISTS (
+							SELECT 1 FROM
+							bb_reserv_tbl res
+							WHERE room.room_id = res.room_id
+         						AND (#{CHECKIN} <![CDATA[<]]>= res.check_out_date 
+           						AND #{CHECKOUT} >= res.check_in_date)
+						)
+				)
+			ORDER BY acc.accommodation_id DESC
+		) a
+	)
+	WHERE rank > #{START} AND rank <![CDATA[<]]> #{END}
+	</select>
+	
+	<select id="getAccCountByCon" parameterType="map" resultType="Integer">
+	SELECT COUNT(*)
+	FROM bb_acc_tbl acc, bb_cate_tbl cat
+	WHERE acc.category_id = cat.category_id
+	  AND acc.accommodation_id IN (
+	      SELECT DISTINCT room.accommodation_id
+	      FROM bb_room_tbl room
+	      WHERE (acc.accname LIKE '%' || #{NAME} || '%' OR acc.location LIKE '%' || #{LOC} || '%')
+	        AND acc.category_id = #{TYPE}
+	        AND room.capacity >= #{CAPA}
+	        AND NOT EXISTS (
+	            SELECT 1 FROM bb_reserv_tbl res 
+	            WHERE room.room_id = res.room_id 
+	              AND (#{CHECKIN} <![CDATA[<]]>= res.check_out_date 
+	                   AND #{CHECKOUT} >= res.check_in_date)
+	        )
+	  )
+	</select>
+</mapper>

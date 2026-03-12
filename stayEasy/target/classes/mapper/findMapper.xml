@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="findMapper">
+
+	<update id="updateUserPwd" parameterType="model.UserInfo">
+	update bb_user_tbl set user_pwd = #{user_pwd} 
+	where user_id = #{user_id} and email = #{email}
+	</update>
+
+	<select id="getUserInfo" parameterType = "model.UserPwd" resultType="model.UserInfo">
+	select * from bb_user_tbl where 
+	user_id = #{user_id} and email = #{email} and username = #{username}
+	</select>
+	
+	<select id="findId" parameterType="model.UserId" resultType="String">
+	SELECT user_id FROM bb_user_tbl
+	WHERE email = #{email}
+	AND username = #{username}
+	</select>
+	
+	<select id="findPwd" parameterType="model.UserPwd" resultType="String">
+	SELECT user_pwd FROM bb_user_tbl
+	WHERE email = #{email}
+	AND username = #{username} and user_id = #{user_id}
+	</select>
+	
+</mapper>

@@ -1,0 +1,30 @@
+@charset "EUC-KR";
+
+/* 목록으로 돌아가기 버튼 */
+.back-button {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+    margin-bottom: 15px;
+    transition: color 0.3s ease-in-out;
+}
+
+.back-button i {
+    font-size: 20px;
+    margin-right: 8px;
+    color: #666;
+    transition: color 0.3s ease-in-out;
+}
+
+.back-button:hover {
+    color: #ff6b81;
+    text-decoration: none !important;
+}
+
+.back-button:hover i {
+    color: #ff6b81;
+	text-decoration: none !important;
+}

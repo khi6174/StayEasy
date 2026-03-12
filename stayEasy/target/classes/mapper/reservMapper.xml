@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reservMapper">
+	
+	<select id="getReservDate" parameterType="model.Room" resultType="model.Datee">
+	select check_in_date, check_out_date from bb_reserv_tbl 
+	where room_id = #{id.roomId} and accommodation_id = #{id.accommodationId}
+	</select>
+
+	<insert id="insertReserv" parameterType="map">
+    INSERT INTO bb_reserv_tbl 
+    (reservation_id, user_id, accommodation_id,
+     room_id, check_in_date, check_out_date, total_price, count, r_date)
+    VALUES (#{reservation_id}, #{user_id},#{accommodation_id},
+    #{room_id}, #{check_in_date}, #{check_out_date}, #{total_price}, #{count}, #{r_date})
+	</insert>
+	
+	
+	<select id="getMaxNumReserv" resultType="Integer">
+	select max(to_number(reservation_id,'9999')) from bb_reserv_tbl
+	</select>
+
+	<select id="getUserId" parameterType="String" resultType="model.User">
+	select user_id from bb_user_tbl where user_id=#{id}
+	</select>
+
+	<select id="getRoomList" parameterType="String" resultMap="getRoomList">
+	select * from bb_room_tbl where
+	accommodation_id = #{accommodation_id}
+	</select>
+	
+	<resultMap id="getRoomList" type="model.Room">
+    <id property="id.roomId" column="room_id"/>
+    <id property="id.accommodationId" column="accommodation_id"/>
+    <result property="name" column="name"/>
+    <result property="price_per_night" column="price_per_night"/>
+    <result property="capacity" column="capacity"/>
+    <result property="room_image" column="room_image"/>
+    <result property="availability" column="availability"/>
+    </resultMap>
+	
+	<select id="getAccDetail" parameterType="String" resultMap="AccMap">
+	select a.*, u.username, u.user_id, u.phone from bb_acc_tbl a
+	join bb_user_tbl u on a.user_id = u.user_id
+	where accommodation_id = #{accommodation_id}
+	</select>
+	
+	<resultMap id="AccMap" type="model.Accommodation">
+    <id property="accommodation_id" column="accommodation_id"/>
+    <result property="user.user_id" column="user_id"/>
+    <result property="accname" column="accname"/>
+    <result property="category.category_id" column="category_id"/>
+    <result property="location" column="location"/>
+    <result property="price_per_night" column="price_per_night"/>
+    <result property="description" column="description"/>
+    <result property="acc_image" column="acc_image"/>
+    <result property="a_date" column="a_date"/>
+    <result property="app_status" column="app_status"/>
+    
+    <association property="user" javaType="model.User">
+        <result property="username" column="username"/>
+        <result property="phone" column="phone"/>
+        <result property="user_id" column="user_id"/>
+    </association>
+    </resultMap>
+	
+	<select id="getAccListByType" parameterType="map" resultType="model.Accommodation">
+		select *
+		from (select rownum rank, a.*
+		        from(
+		        	select acc.* 
+			     	from bb_acc_tbl acc, bb_cate_tbl cat
+			     	where acc.category_id = cat.category_id
+			     	and acc.category_id = #{TYPE}
+			     	and acc.app_status = 1
+			     	order by acc.accommodation_id desc) a)
+		where rank > #{start} and rank <![CDATA[<]]> #{end}	
+	</select>
+	
+	<select id="getAccListByTypeLoc" parameterType="map" resultType="model.Accommodation">
+		select *
+		from (select rownum rank, a.*
+		        from(
+		        	select acc.* 
+			     	from bb_acc_tbl acc, bb_cate_tbl cat
+			     	where acc.category_id = cat.category_id
+			     	and acc.category_id = #{TYPE}
+			     	and acc.location like '%' || #{LOC} || '%'
+			     	and acc.app_status = 1
+			     	order by acc.accommodation_id desc) a)
+		where rank > #{start} and rank <![CDATA[<]]> #{end}	
+	</select>
+	
+	<select id="getMaxNum" resultType="Integer">
+		select max(to_number(accommodation_id,'9999')) from bb_acc_tbl
+	</select>
+	
+	<select id="getAccCount" parameterType="String" resultType="Integer">
+		select count(*) from bb_acc_tbl where category_id = #{category_id} and app_status = 1
+	</select>
+
+	<select id="getAccCountByLOC" parameterType="map" resultType="Integer">
+		select count(*) from bb_acc_tbl 
+		where category_id = #{category_id} and location like '%' || #{location} || '%'
+		and app_status = 1
+	</select>
+
+	<select id="getUserReservation" parameterType="String" resultMap="ReservationMap">
+	    SELECT r.*, o.* FROM bb_reserv_tbl r join bb_room_tbl o on r.room_id = o.room_id
+	    WHERE user_id = #{user_id} ORDER BY r_date DESC
+	</select>
+	
+	<resultMap id="ReservationMap" type="model.Reservation">
+    <id property="reservation_id" column="reservation_id"/>
+    <result property="user.user_id" column="user_id"/>
+    <result property="total_price" column="total_price"/>
+    <result property="check_in_date" column="check_in_date"/>
+    <result property="check_out_date" column="check_out_date"/>
+    <result property="r_date" column="r_date"/>
+
+    <!-- Room 객체 매핑 -->
+    <association property="room" javaType="model.Room">
+        <id property="id.roomId" column="room_id"/>
+        <id property="id.accommodationId" column="accommodation_id"/>
+        <result property="room_image" column="room_image"/>
+        <result property="name" column="name"/>
+        <result property="price_per_night" column="price_per_night"/>
+    </association>
+</resultMap>
+	<select id="getReservation"  parameterType="String" resultMap="ReservationMap">
+	 SELECT r.*, o.* FROM bb_reserv_tbl r join bb_room_tbl o on r.room_id = o.room_id
+	    WHERE reservation_id = #{reservation_id}
+	</select>
+	
+<select id="getReservationByInquireId" parameterType="Integer" resultType="model.Reservation">
+    SELECT r.*
+    FROM bb_reserv_tbl r
+    JOIN bb_inq_tbl i ON r.reservation_id = i.reservation_id
+    WHERE i.inquire_id = #{inquire_id}
+</select>
+
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="adminMapper">
+	<!-- 모든 사용자 조회 -->
+    <select id="getAllUsers" resultType="model.User">
+        SELECT * FROM bb_user_tbl
+    </select>
+    
+    <!-- 특정 사용자 정보 조회 -->
+    <select id="getUserInfoById" parameterType="String" resultType="model.UserInfo">
+        SELECT user_id, username, birth, email, phone, addr, gender 
+        FROM bb_user_tbl 
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 모든 문의 조회 -->
+    <select id="getAllInquires" resultType="model.Inquire">
+        SELECT * FROM bb_inq_tbl
+    </select>
+
+    <!-- 등록된 숙소 목록 (승인된 숙소) -->
+    <select id="getRegisteredAccommodations" resultMap="AccommodationMap">
+	    SELECT 
+	        a.accommodation_id, a.accname, a.location, a.app_status,
+	        u.username, u.phone
+	    FROM bb_acc_tbl a
+	    LEFT JOIN bb_user_tbl u
+	        ON a.user_id = u.user_id
+	    WHERE a.app_status = 1
+   </select>
+   <!-- 사용자 조회 -> 등록된 숙소 목록 -->
+	    <select id="getRegisteredAccommodationsByAdmin" resultMap="AccommodationMap">
+	    SELECT 
+	        a.accommodation_id, a.accname, a.location, a.app_status,
+	        u.username, u.phone
+	    FROM bb_acc_tbl a
+	    LEFT JOIN bb_user_tbl u
+	        ON a.user_id = u.user_id
+	    WHERE a.app_status = 1 and a.user_id=#{userId}
+   </select>
+   
+   	<select id="getRegisteredAccommodationById" resultMap="AccommodationMap" parameterType="String">
+	    SELECT 
+	        a.accommodation_id, a.accname, a.acc_image, a.location,
+	        a.app_status, a.description, a.price_per_night, a.category_id,
+	        u.username, u.phone
+	    FROM bb_acc_tbl a
+	    LEFT JOIN bb_user_tbl u
+	        ON a.user_id = u.user_id
+	    WHERE a.accommodation_id = #{accommodationId}
+	    AND a.app_status = 1
+	</select>
+
+     <!-- ✅ 승인 대기 숙소 목록 (app_status = 0인 숙소만 표시) -->
+	<select id="getPendingAccommodations" resultMap="AccommodationMap">
+	    SELECT a.accommodation_id, a.accname, a.location, a.app_status,
+	           u.username, u.phone
+	    FROM bb_acc_tbl a
+	    LEFT JOIN bb_user_tbl u
+	      ON a.user_id = u.user_id
+	</select>
+
+	 <!-- 사용자 조회 -> 승인 대기 숙소 목록 (app_status = 0인 숙소만 표시) -->
+	<select id="getPendingAccommodationsByAdmin" resultMap="AccommodationMap">
+	    SELECT a.accommodation_id, a.accname, a.location, a.app_status,
+	           u.username, u.phone
+	    FROM bb_acc_tbl a
+	    LEFT JOIN bb_user_tbl u
+	      ON a.user_id = u.user_id
+	      where a.user_id=#{userId}
+	</select>
+
+    <!-- ✅ 특정 숙소 상세 조회 -->
+	<select id="getAccommodationById" resultMap="AccommodationMap">
+	    SELECT 
+	        a.accommodation_id, a.accname, a.acc_image, a.location,
+	        a.app_status, a.description, a.price_per_night, a.category_id,
+	        u.username, u.phone
+	    FROM bb_acc_tbl a
+	    LEFT JOIN bb_user_tbl u
+	        ON a.user_id = u.user_id
+	    WHERE a.accommodation_id = #{accommodationId}
+	</select>
+	
+	<resultMap id="AccommodationMap" type="map">
+	    <result property="accommodation_id" column="accommodation_id"/>
+	    <result property="accname" column="accname"/>
+	    <result property="acc_image" column="acc_image"/>
+	    <result property="location" column="location"/>
+	    <result property="app_status" column="app_status"/>
+	    <result property="description" column="description"/>
+	    <result property="price_per_night" column="price_per_night"/>
+	    <result property="category_id" column="category_id"/>
+	    <result property="username" column="username"/>
+	    <result property="phone" column="phone"/>
+	</resultMap>
+	
+	<select id="getRoomsByAccommodationId" resultMap="RoomMap">
+	    SELECT 
+	        room_id,
+	        name AS room_name, 
+	        room_image, 
+	        price_per_night AS room_price, 
+	        capacity AS room_capacity
+	    FROM bb_room_tbl
+	    WHERE accommodation_id = #{accommodationId}
+	    ORDER BY room_id
+	</select>
+	
+	<resultMap id="RoomMap" type="map">
+	    <result property="room_id" column="room_id"/>
+	    <result property="room_name" column="room_name"/>
+	    <result property="room_image" column="room_image"/>
+	    <result property="room_price" column="room_price"/>
+	    <result property="room_capacity" column="room_capacity"/>
+	</resultMap>
+	
+    <update id="updateAccommodationStatus">
+        UPDATE bb_acc_tbl
+        SET app_status = #{status}
+        WHERE accommodation_id = #{accommodationId}
+    </update>
+
+</mapper>

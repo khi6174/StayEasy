@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eventMapper">
+   <select id="getEventCount" resultType="Integer">
+      select count(*) from bb_event_tbl
+   </select>
+<select id="getEventList" parameterType="model.StartEnd" resultType="model.Event">
+    select EVENT_ID, TITLE, EVENT_IMAGE, E_DATE, START_DATE, END_DATE
+    from (
+        select rownum rank, a.*
+        from (
+            select EVENT_ID, TITLE, EVENT_IMAGE, E_DATE, START_DATE, END_DATE
+            from bb_event_tbl
+            order by EVENT_ID desc
+        ) a
+    )
+    where rank > #{start} and rank <![CDATA[<]]> #{end}
+</select>
+
+<update id="updateEvent" parameterType="model.Event">
+    update bb_event_tbl
+    set title = #{title},
+        content = #{content},
+        event_image = #{event_image, jdbcType=VARCHAR},
+        start_date = #{start_date, jdbcType=DATE},
+        end_date = #{end_date, jdbcType=DATE},
+        e_date = #{e_date, jdbcType=DATE}
+    where event_id = #{event_id}
+</update>
+	<delete id="deleteEvent" parameterType="Integer">
+		delete from bb_event_tbl where event_id = #{event_id}
+	</delete>
+	<select id="getMaxNum" resultType="Integer">
+	select max(event_id) from bb_event_tbl	
+	</select>
+<insert id="putEventImage" parameterType="model.Event">
+    insert into bb_event_tbl (event_id, title, content, event_image, start_date, end_date, e_date)
+    values (#{event_id}, #{title}, #{content}, #{event_image}, 
+            #{start_date, jdbcType=DATE}, #{end_date, jdbcType=DATE}, SYSDATE)
+</insert>
+
+
+
+<select id="getEvent" parameterType="Integer" resultType="model.Event">
+    select event_id, title, content, event_image, start_date, end_date, e_date
+    from bb_event_tbl
+    where event_id = #{event_id}
+</select>
+
+</mapper>

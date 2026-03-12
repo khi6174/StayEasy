@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reviewMapper">
+	<select id="getACCByName" parameterType="String" resultType="String">
+		select accommodation_id from bb_acc_tbl where accname = #{ACC}
+	</select>
+
+	<insert id="putReview" parameterType="model.Review">
+		insert into bb_review_tbl (review_id, user_id, reservation_id, rating, content, v_date) 
+		values(#{review_id},#{user.user_id},#{reservation.reservation_id},#{rating},#{content},sysdate)
+	</insert>
+
+	<delete id="deleteReview" parameterType="Integer">
+		delete from bb_review_tbl where review_id = #{review_id}
+	</delete>
+
+	<select id="getMaxNum" resultType="Integer">
+		select max(review_id) from bb_review_tbl
+	</select>
+
+	<select id="getReservByUser" resultMap="ReservationMap" parameterType="map">
+	    SELECT r.reservation_id, r.user_id, r.accommodation_id, r.room_id, 
+	           r.check_in_date, r.check_out_date, u.username, rm.name AS roomname
+	    FROM bb_reserv_tbl r
+	    JOIN bb_user_tbl u ON r.user_id = u.user_id
+	    JOIN bb_room_tbl rm ON r.room_id = rm.room_id
+	    WHERE r.user_id = #{ID}
+			AND r.accommodation_id = #{ACC}  <!-- 현재 숙소의 예약 목록만 가져오도록 필터링 추가 -->
+			AND r.check_out_date <![CDATA[<]]>= sysdate
+	    ORDER BY r.check_out_date DESC
+	</select>
+	
+
+	<select id="getRoomById" resultType="model.Room" parameterType="model.RoomId">
+		SELECT r.room_id, r.accommodation_id, r.name 
+		FROM bb_room_tbl r 
+		WHERE r.room_id = #{ROOM} AND r.accommodation_id = #{ACC}
+	</select>
+	
+	<select id="getRoomIdByReserv" resultType="model.RoomId" parameterType="String">
+		SELECT room_id, accommodation_id
+		FROM bb_reserv_tbl
+		WHERE reservation_id = #{RESERV}
+	</select>
+
+	<!-- 특정 예약의 리뷰 조회 -->
+	<select id="getReviewByReserv" resultMap="ReviewMap" parameterType="String">
+		SELECT rv.review_id, rv.reservation_id,	rv.rating, rv.content, rv.v_date, 
+			rs.room_id,	rs.accommodation_id, rs.check_in_date, rs.check_out_date,
+			u.user_id, u.username
+		FROM bb_review_tbl rv
+		JOIN bb_reserv_tbl rs ON rv.reservation_id = rs.reservation_id
+		JOIN bb_user_tbl u ON rs.user_id = u.user_id
+		WHERE rv.reservation_id = #{RESERV}
+	</select>
+
+	
+	<select id="getReservByAcc" resultMap="ReservationMap" parameterType="String">
+		SELECT r.reservation_id, r.user_id,	u.username, r.accommodation_id,
+			r.room_id, rm.name AS roomname,	r.check_in_date, r.check_out_date
+		FROM bb_reserv_tbl r
+		JOIN bb_user_tbl u ON r.user_id = u.user_id
+		JOIN bb_room_tbl rm ON r.room_id = rm.room_id
+		WHERE r.accommodation_id = #{ACC}
+	</select>
+
+	<resultMap id="ReservationMap" type="model.Reservation">
+		<id property="reservation_id" column="reservation_id"/>
+		<result property="check_in_date" column="check_in_date"/>
+		<result property="check_out_date" column="check_out_date"/>
+		
+		<!-- User 정보 -->
+		<association property="user" javaType="model.User">
+			<id property="user_id" column="user_id"/>
+			<result property="username" column="username"/>
+		</association>
+		
+		<!-- Room 정보 -->
+		<association property="room" javaType="model.Room">
+			<id property="id.roomId" column="room_id"/> <!-- ✅ 복합키 매핑 -->
+			<id property="id.accommodationId" column="accommodation_id"/> <!-- ✅ 복합키 매핑 -->
+			<result property="name" column="roomname"/>
+		</association>
+	</resultMap>
+	
+	<!-- ✅ Review Mapping (리뷰 조회 시 User 정보 포함) -->
+	<resultMap id="ReviewMap" type="model.Review">
+		<id property="review_id" column="review_id"/>
+		<result property="rating" column="rating"/>
+		<result property="content" column="content"/>
+		<result property="v_date" column="v_date"/>
+		
+		<!-- Reservation 매핑 -->
+		<association property="reservation" javaType="model.Reservation">
+			<id property="reservation_id" column="reservation_id"/>
+			<result property="check_in_date" column="check_in_date"/>
+			 <result property="check_out_date" column="check_out_date"/>
+			
+			<!-- Room 정보 -->
+			<association property="room" javaType="model.Room">
+				<id property="id.roomId" column="room_id"/>
+				<id property="id.accommodationId" column="accommodation_id"/>
+			</association>
+		</association>
+		
+		<!-- User 정보 -->
+		<association property="user" javaType="model.User">
+			<id property="user_id" column="user_id"/>
+			<result property="username" column="username"/>
+		</association>
+	</resultMap>
+
+	
+	<select id="getAccName" resultType="String" parameterType="String">
+		SELECT accname FROM bb_acc_tbl WHERE accommodation_id = #{ACC}
+	</select>
+	
+	<select id="getRatingAVG" resultType="BigDecimal" parameterType="String">
+		SELECT ROUND(AVG(rv.rating), 1) AS avg_rating 
+		FROM bb_acc_tbl a, bb_review_tbl rv, bb_reserv_tbl rs
+		WHERE a.accommodation_id = rs.accommodation_id
+			AND rs.reservation_id = rv.reservation_id
+			AND a.accommodation_id = #{ACC}
+		GROUP BY a.accommodation_id, a.accname
+		ORDER BY avg_rating DESC
+	</select>
+    
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="accDeleteMapper">
+
+	<delete id="deleteInq" parameterType="String">
+	delete bb_inq_tbl where reservation_id = #{reservation_id}
+	</delete>
+
+	<delete id="deleteCartItem" parameterType="String">
+	delete bb_cartitem_tbl where accommodation_id = #{accommodation_id}
+	</delete>
+
+	<delete id="deleteRoomUpdate" parameterType="String">
+	delete bb_room_update_tbl where accommodation_id = #{accommodation_id}
+	</delete>
+
+	<delete id="deleteAccUpdate" parameterType="String">
+	delete bb_acc_update_tbl where accommodation_id = #{accommodation_id}
+	</delete>
+
+	<delete id="deleteReserv" parameterType="String">
+	delete bb_reserv_tbl where accommodation_id = #{accommodation_id}
+	</delete>
+
+	<delete id="deleteReview" parameterType="String">
+	delete bb_review_tbl where reservation_id = #{reservation_id}
+	</delete>
+	
+	<select id="getReservIdList" parameterType="String" resultType="String">
+	select reservation_id from bb_reserv_tbl where accommodation_id = #{accommodation_id}
+	</select>
+	
+	<delete id="deleteRoom" parameterType="String">
+	delete bb_room_tbl where accommodation_id = #{accommodation_id}
+	</delete>
+	
+	<delete id="deleteAcc" parameterType="String">
+	delete bb_acc_tbl where accommodation_id = #{accommodation_id}
+	</delete>
+	
+</mapper>

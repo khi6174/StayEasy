@@ -1,0 +1,145 @@
+@charset "EUC-KR";
+
+/* 공통 스타일 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    padding: 50px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 공지사항 & 이벤트 */
+.info-container {
+	margin-top: 50px;
+    width: 80%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* 공지사항 & 이벤트 개별 컨테이너 */
+.notice, .event {
+    width: 49%;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+/* 공지사항 & 이벤트 제목 */
+.notice h2, .event h2 {
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #000;
+}
+
+/* 공지사항 & 이벤트 제목 색상 변경 */
+.notice h2 a, .event h2 a {
+    text-decoration: none;
+    color: #000;
+}
+
+.notice h2 a:hover, .event h2 a:hover {
+    color: #008bff;
+}
+
+/* 공지사항 리스트 */
+.notice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notice-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.notice-list li a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #333;
+    flex-grow: 1;
+    padding-left: 10px;
+}
+
+.notice-list li a:hover {
+    color: #007bff;
+}
+
+/* 공지사항 라벨 */
+.notice-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff4757;
+    background: #ffe6e6;
+    padding: 4px 8px;
+    border-radius: 5px;
+}
+
+/* 날짜 */
+.notice-date {
+    font-size: 14px;
+    color: #777;
+}
+
+/* 이벤트 슬라이드 */
+.swiper {
+    width: 100%;
+    height: 360px;
+}
+
+.swiper-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.event img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.event-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.event-date {
+    font-size: 16px;
+    color: #666;
+}
+
+/* 이벤트 컨테이너 내 모든 앵커 밑줄 제거 */
+.event a {
+    text-decoration: none; /* 기본 밑줄 제거 */
+    color: inherit; /* 부모 요소의 색상을 상속받음 */
+}
+
+.event a:hover {
+    text-decoration: none; /* 호버 시에도 밑줄 제거 */
+    color: #007bff; /* 기존 파란색 유지 */
+}
+

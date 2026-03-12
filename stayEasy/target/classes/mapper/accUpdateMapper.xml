@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="accUpdateMapper">
+
+	<select id="selectAccUpdateList" parameterType="String" resultType="model.AccUpdate">
+	select * from bb_acc_update_tbl where user_id = #{user_id}
+	</select>
+
+	<update id="updateAccUpdatePrice" parameterType="Integer">
+	update bb_acc_update_tbl set price_per_night = #{price_per_night}
+	</update>
+
+	<update id="updateRoomUpdate" parameterType="model.RoomUpdate">
+	update bb_room_update_tbl set room_approval_status = #{room_approval_status}
+	where accommodation_id = #{room.id.accommodationId} and room_id = #{room.id.roomId}
+	</update>
+
+	<update id="updateRoom" parameterType="model.RoomUpdate">
+	update bb_room_tbl set name = #{name}, price_per_night = #{price_per_night},
+	capacity = #{capacity}, room_image = #{room_image}
+	where accommodation_id = #{room.id.accommodationId} and 
+	room_id = #{room.id.roomId}
+	</update>
+
+	<update id="updateAccUpdate" parameterType="model.AccUpdate">
+	update bb_acc_update_tbl set 
+	acc_approval_status = #{acc_approval_status}, acc_rejection_reason = #{acc_rejection_reason}
+	where acc_request_id = #{acc_request_id}
+	</update>
+
+	<update id="updateAcc" parameterType="model.AccUpdate">
+	update bb_acc_tbl set accname = #{accname}, category_id = #{category.category_id},
+	location = #{location}, price_per_night = #{price_per_night},
+	description = #{description}, acc_image = #{acc_image}
+	where accommodation_id = #{accommodation.accommodation_id}
+	</update>
+
+	<select id="getRoomUpdateList" parameterType="Integer" resultMap="roomUpdate">
+	select * from bb_room_update_tbl where acc_request_id = #{acc_request_id}
+	</select>
+	
+	<resultMap type="model.RoomUpdate" id="roomUpdate">
+	<id property="room_request_id" column="room_request_id"/>
+	<result property="name" column="name"/>
+	<result property="price_per_night" column="price_per_night"/>
+	<result property="capacity" column="capacity"/>
+	<result property="room_image" column="room_image"/>
+	<result property="availability" column="availability"/>
+	<result property="room_request_date" column="room_request_date"/>
+	<result property="room_approval_status" column="room_approval_status"/>
+	<result property="room_rejection_reason" column="room_rejection_reason"/>
+	
+	<association property="accUpdate" javaType="model.AccUpdate">
+	<id property="acc_request_id" column="acc_request_id"/>
+	</association>
+	
+	<association property="room" javaType="model.Room">
+	<id property="id.roomId" column="room_id"/>
+	<id property="id.accommodationId" column="accommodation_id"/>
+	</association>
+	
+	<association property="user" javaType="model.User">
+	<id property="user_id" column="user_id"/>
+	</association>
+	</resultMap>
+	
+	<select id="getRoomReqIdList" parameterType="Integer" resultType="Integer">
+	select room_request_id from bb_room_update_tbl where acc_request_id = #{acc_request_id}
+	</select>
+	
+	<select id="getAccUpdate" parameterType="Integer" resultMap="accUpdateList">
+	select * from bb_acc_update_tbl where acc_request_id = #{acc_request_id}
+	</select>
+	
+	<delete id="deleteAccRequest" parameterType="Integer">
+	delete bb_acc_update_tbl where acc_request_id = #{acc_request_id}
+	</delete>
+	
+	<delete id="deleteRoomRequest" parameterType="Integer">
+	delete bb_room_update_tbl where room_request_id = #{room_request_id}
+	</delete>
+
+	<select id="getAccUpdateList" resultMap="accUpdateList">
+	select d.*, u.username from bb_acc_update_tbl d join bb_user_tbl u on d.user_id = u.user_id
+	</select>
+	
+	<select id="getAccUpdateListByAdmin" resultMap="accUpdateList">
+	select d.*, u.username 
+	from bb_acc_update_tbl d 
+	join bb_user_tbl u on d.user_id = u.user_id
+	where d.user_id=#{userId}
+	order by d.acc_request_id desc
+	</select>
+	
+	<resultMap type="model.AccUpdate" id="accUpdateList">
+	<id property="acc_request_id" column="acc_request_id"/>
+	<result property="accname" column="accname"/>
+	<result property="location" column="location"/>
+	<result property="price_per_night" column="price_per_night"/>
+	<result property="description" column="description"/>
+	<result property="acc_image" column="acc_image"/>
+	<result property="acc_request_date" column="acc_request_date"/>
+	<result property="acc_approval_status" column="acc_approval_status"/>
+	<result property="acc_rejection_reason" column="acc_rejection_reason"/>
+	
+	<association property="accommodation" javaType="model.Accommodation">
+	<id property="accommodation_id" column="accommodation_id"/>
+	</association>
+	
+	<association property="user" javaType="model.User">
+	<id property="user_id" column="user_id"/>
+	<result property="username" column="username"/>
+	</association>
+	
+	<association property="category" javaType="model.Category">
+	<id property="category_id" column="category_id"/>
+	</association>
+	</resultMap>
+
+	<insert id="insertRoomUpdate" parameterType="model.RoomUpdate">
+	insert into bb_room_update_tbl
+	values(#{room_request_id}, #{room.id.roomId}, #{room.id.accommodationId},
+	#{user.user_id},#{name},#{price_per_night},#{capacity},#{room_image},
+	#{availability},sysdate,#{room_approval_status},#{room_rejection_reason},#{accUpdate.acc_request_id})
+	</insert>
+	
+	<insert id="insertAccUpdate" parameterType="model.AccUpdate">
+	insert into bb_acc_update_tbl
+	values (#{acc_request_id},#{accommodation.accommodation_id},#{user.user_id},
+	#{accname},#{category.category_id},
+	#{location},#{price_per_night},#{description},
+	#{acc_image},sysdate,#{acc_approval_status},#{acc_rejection_reason})
+	</insert>
+	
+	<select id="getMaxAccRequest" resultType="Integer">
+	select max(acc_request_id) from bb_acc_update_tbl
+	</select>
+	
+	<select id="getMaxRoomRequest" resultType="Integer">
+	select max(room_request_id) from bb_room_update_tbl
+	</select>
+	
+</mapper>

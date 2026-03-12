@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cartMapper">
+
+	<update id="modifyCartItem" parameterType="model.CartItem">
+	update bb_cartitem_tbl set 
+	count = #{count}, check_in_date = #{check_in_date},
+	check_out_date = #{check_out_date}, total_price = #{total_price}
+	where cartitem_id = #{cartitem_id}
+	</update>
+
+	<select id="countCartItem" parameterType="String" resultType="Integer">
+	select count(*) from bb_cartitem_tbl where user_id = #{user_id}
+	</select>
+
+	<delete id="deleteCart" parameterType="map">
+	delete bb_cartitem_tbl where user_id = #{user_id} and cartitem_id = #{cartitem_id}
+	</delete>
+
+	<select id="checkRoomInCart" parameterType="map" resultType="Integer">
+    SELECT COUNT(*) FROM bb_cartitem_tbl WHERE user_id = #{user_id} AND room_id = #{room_id}
+	</select>
+
+	<select id="getRoomInfo" parameterType="model.RoomId" resultType="model.Room">
+	select * from bb_room_tbl where room_id = #{roomId} 
+	and accommodation_id = #{accommodationId}
+	</select>
+
+	<select id="getMaxCartId" resultType="Integer">
+	select max(to_number(cartitem_id,'9999')) from bb_cartitem_tbl 
+	</select>
+
+	<insert id="insertCartItem" parameterType="map">
+	insert into bb_cartitem_tbl values(
+	#{cartItem_id}, #{user_id}, #{accommodation_id}, #{room_id},
+	#{count}, #{total_price}, #{check_in}, #{check_out}
+	)
+	</insert>
+	
+	<select id="selectOneCartItem" parameterType="String" resultMap="cartItemResultMap">
+	select c.cartitem_id, c.user_id, c.count, c.total_price, c.check_in_date, c.check_out_date,
+        r.accommodation_id, r.room_id, r.room_image, r.price_per_night, r.name 
+    FROM bb_cartitem_tbl c
+    JOIN bb_room_tbl r 
+    ON c.room_id = r.room_id AND c.accommodation_id = r.accommodation_id 
+    where cartitem_id = #{cartitem_id}
+	</select>
+	
+	<select id="selectCartItem" parameterType="String" resultMap="cartItemResultMap">
+    SELECT 
+        c.cartitem_id, c.user_id, c.count, c.total_price, c.check_in_date, c.check_out_date,
+        r.accommodation_id, r.room_id, r.room_image, r.price_per_night, r.name
+    FROM bb_cartitem_tbl c
+    JOIN bb_room_tbl r 
+    ON c.room_id = r.room_id AND c.accommodation_id = r.accommodation_id
+    WHERE c.user_id = #{user_id}
+</select>
+
+<resultMap id="cartItemResultMap" type="model.CartItem">
+    <id property="cartitem_id" column="cartitem_id"/>
+    <result property="user.user_id" column="user_id"/>
+    <result property="count" column="count"/>
+    <result property="total_price" column="total_price"/>
+    <result property="check_in_date" column="check_in_date"/>
+    <result property="check_out_date" column="check_out_date"/>
+
+    <!-- Room 객체 매핑 -->
+    <association property="room" javaType="model.Room">
+        <id property="id.roomId" column="room_id"/>
+        <id property="id.accommodationId" column="accommodation_id"/>
+        <result property="room_image" column="room_image"/>
+        <result property="name" column="name"/>
+        <result property="price_per_night" column="price_per_night"/>
+    </association>
+</resultMap>
+
+	
+</mapper>

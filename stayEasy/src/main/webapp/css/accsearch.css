@@ -1,0 +1,114 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+.container {
+    width: 60%;
+    background-color: #ffffff;
+    border: 2px solid #ff7f9c; 
+    border-radius: 20px;
+    padding: 30px 40px;
+    margin: 50px auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+}
+
+h2 {
+    font-size: 2.5em;
+    color: #444;
+    margin-bottom: 20px;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.search-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  
+    gap: 20px; 
+}
+
+.inline-group {
+    display: flex;
+    gap: 20px; 
+    width: 100%;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%; 
+}
+
+label {
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+select, 
+input[type="text"], 
+input[type="date"], 
+input[type="number"] {
+    width: 100%; 
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    background-color: #ff7f9c;
+    color: #fff;
+    font-size: 18px;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+input[type="submit"]:hover {
+    background-color: #d83f5b;
+}
+
+@media (max-width: 900px) {
+    .container {
+        width: 80%;
+    }
+
+    .search-box {
+        grid-template-columns: 1fr;
+    }
+
+    .inline-group {
+        flex-direction: column;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+
+    select, 
+    input[type="text"], 
+    input[type="date"], 
+    input[type="number"] {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 2em;
+    }
+}

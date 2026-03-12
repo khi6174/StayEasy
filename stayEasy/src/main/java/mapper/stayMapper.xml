@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="stayMapper">
+	<select id="getNoticeList" resultType="model.Notice">
+		SELECT notice_id, title, n_date 
+	FROM (
+		SELECT notice_id, title, n_date 
+		FROM bb_notice_tbl 
+		ORDER BY notice_id DESC
+	) 
+	WHERE ROWNUM <![CDATA[<]]>= 7
+	</select>
+	<select id="getEventList" resultType="model.Event">
+		SELECT *
+	FROM (
+		SELECT * 
+		FROM bb_event_tbl 
+		ORDER BY event_id DESC
+	) 
+	WHERE ROWNUM <![CDATA[<]]>= 6
+	</select>
+</mapper>

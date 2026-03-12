@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="accMapper">
+   <update id="updateRoomImage" parameterType="String">
+   update bb_room_tbl set room_image = #{room_image}
+   </update>
+   
+   <select id="getCateName" parameterType="String" resultType="String">
+   select name from bb_cate_tbl where category_id = #{category_id}
+   </select>
+   
+   <select id="getCateIdByAcc" parameterType="String" resultType="String">
+   select category_id from bb_acc_tbl where accommodation_id = #{accommodation_id}
+   </select>
+   
+    <!-- 사용자 정보 가져오기 -->
+    <select id="getUserInfoById" parameterType="string" resultType="model.UserInfo">
+        SELECT user_id, username, phone
+        FROM bb_user_tbl
+        WHERE user_id = #{user_id}
+    </select>
+    
+    <!-- 숙소 등록 -->
+	<insert id="insertAccommodation" parameterType="model.Accommodation" useGeneratedKeys="true" keyProperty="accommodation_id">
+	    INSERT INTO bb_acc_tbl 
+	    (accommodation_id, user_id, accname, category_id, location, 
+	     price_per_night, description, acc_image, a_date, app_status)
+	    VALUES
+	    (#{accommodation_id}, 
+	     #{user.user_id}, 
+	     #{accname}, 
+	     #{category.category_id}, 
+	     #{location}, 
+	     #{price_per_night}, 
+	     #{description}, 
+	     #{acc_image}, 
+	     SYSDATE, 
+	     #{app_status})
+	</insert>
+
+	<!-- 객실 등록 -->
+	<insert id="insertRoom" parameterType="model.Room">
+	    INSERT INTO bb_room_tbl
+	    (room_id, accommodation_id, name, capacity, room_image, price_per_night, availability)
+	    VALUES
+	    (#{id.roomId}, #{id.accommodationId}, 
+	    #{name}, #{capacity}, 
+	    #{room_image}, #{price_per_night}, 0)
+	</insert>
+
+	<!-- 전체 숙소 개수 확인 -->
+	<select id="getAccommodationCount" resultType="int">
+	    SELECT COUNT(*) FROM bb_acc_tbl
+	</select>
+	
+	<!-- 전체 객실 개수 확인 -->
+	<select id="getRoomCount" resultType="int">
+	    SELECT COUNT(*) FROM bb_room_tbl
+	</select>
+	
+	<!-- 가장 큰 숙소 ID 조회 후 +1 -->
+	<select id="getMaxAccommodationId" resultType="int">
+	    SELECT NVL(MAX(TO_NUMBER(accommodation_id, '9999')), 0)
+	    FROM bb_acc_tbl	
+	</select>
+	
+	<!-- 가장 큰 방 ID 조회 후 +1 -->
+	<select id="getMaxRoomId" resultType="int">
+	    SELECT NVL(MAX(TO_NUMBER(room_id, '9999')), 0)
+	    FROM bb_room_tbl
+    </select>
+    
+    <select id="getAccommodationsByUser" resultType="model.Accommodation">
+	    SELECT 
+	        a.accommodation_id,
+	        a.accname,
+	        a.a_date,
+	        a.app_status
+	    FROM bb_acc_tbl a
+	    WHERE a.user_id = #{userId}
+	    ORDER BY a.a_date DESC
+	</select>
+
+	
+</mapper>

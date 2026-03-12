@@ -1,0 +1,52 @@
+@charset "EUC-KR";
+
+/* 페이지 전체 높이 유지 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 본문이 공간을 차지하도록 설정 */
+.content {
+    flex: 1;
+}
+
+/* footer 스타일 */
+.footer {
+    width: 100%;
+    background: linear-gradient(90deg, #f7f7f7, #eaeaea); /* 밝은 회색 배경 */
+    color: #909090; /* 기존보다 더 진한 회색 */
+    text-align: center;
+    padding: 20px 0;
+    font-size: 14px;
+    font-weight: 600; /* 글씨 조금 더 진하게 */
+    border-top: 1px solid rgba(0, 0, 0, 0.05); /* 희미한 구분선 */
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.03); /* 은은한 그림자 */
+}
+
+/* 푸터 안의 텍스트 */
+.footer p {
+    margin: 5px 0;
+    font-size: 13px;
+    font-weight: 500; /* 기존보다 더 굵게 설정 */
+    letter-spacing: 0.5px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .footer {
+        font-size: 13px;
+        padding: 15px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        font-size: 12px;
+        padding: 12px 0;
+    }
+}

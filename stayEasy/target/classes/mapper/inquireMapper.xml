@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="inquireMapper">
+
+	<select id="getInq" parameterType="String" resultType="model.Inquire">
+	select * from bb_inq_tbl where reservation_id = #{reservation_id}
+	</select>
+
+	<select id="getReply" parameterType="Integer" resultMap="getInquireReserv">
+	select * from bb_inq_tbl where parent_id = #{parent_id}
+	</select>
+
+	<select id="getMaxOrder" resultType="Integer" parameterType="int">
+	select max(order_no) from bb_inq_tbl where group_id = #{group_id}
+	</select>
+	
+	<select id="countInqId" resultType="Integer">
+	select max(inquire_id) from bb_inq_tbl
+	</select>
+
+	<select id="getReservId" parameterType="Integer" resultType="String">
+	select reservation_id from bb_inq_tbl
+	where inquire_id = #{inquire_id, jdbcType=INTEGER}
+	</select>
+	
+	<update id="setStatus" parameterType="map">
+	update bb_inq_tbl set status = #{status} where inquire_id = #{inquire_id}
+	</update>
+
+    <insert id="putInquire" parameterType="model.Inquire">
+       	insert into bb_inq_tbl 
+       	(inquire_id, reservation_id, user_id, content, status, i_date, group_id, parent_id,order_no, title)
+        VALUES (#{inquire_id}, #{reservation.reservation_id}, 
+        #{user.user_id}, #{content}, #{status}, SYSDATE,#{group_id},#{parent_id},#{order_no},#{title})
+    </insert>
+    
+	<select id="getInquireListByUser" parameterType="model.StartEnd" resultMap="InquiryResultMap">
+	    SELECT inquire_id, reservation_id, user_id, content, status, i_date ,title
+	    FROM (
+	        SELECT rownum rank, a.*
+	        FROM (
+	            SELECT 
+	                i.inquire_id, 
+	                r.reservation_id, 
+	                u.user_id, 
+	                i.content, 
+	                i.status, 
+	                i.i_date,
+	                i.title
+	            FROM bb_inq_tbl i
+	            JOIN bb_reserv_tbl r ON i.reservation_id = r.reservation_id
+	            JOIN bb_user_tbl u ON i.user_id = u.user_id
+	            WHERE i.user_id = #{userId}
+	            ORDER BY i.inquire_id asc
+	        ) a)
+	 where rank > #{start} and rank <![CDATA[<]]> #{end} 
+	</select>
+
+<select id="getInquireList" parameterType="model.StartEnd" resultMap="InquiryResultMap">
+    SELECT inquire_id, reservation_id, user_id, content, status, i_date, title 
+    FROM (
+        SELECT rownum rank, a.*
+        FROM (
+            SELECT 
+                i.inquire_id, 
+                r.reservation_id, 
+                u.user_id, 
+                i.content, 
+                i.status, 
+                i.i_date,
+                i.title
+            FROM bb_inq_tbl i
+            JOIN bb_reserv_tbl r ON i.reservation_id = r.reservation_id
+            JOIN bb_user_tbl u ON i.user_id = u.user_id
+            ORDER BY i.inquire_id asc
+        ) a)
+ where rank > #{start} and rank <![CDATA[<]]> #{end} 
+</select>
+
+<resultMap id="InquiryResultMap" type="model.Inquire">
+    <!-- Inquire 매핑 -->
+    <id property="inquire_id" column="inquire_id"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="status" column="status"/>
+    <result property="i_date" column="i_date"/>
+
+    <!-- Reservation 객체 매핑 -->
+    <association property="reservation" javaType="model.Reservation">
+        <id property="reservation_id" column="reservation_id"/>
+    </association>
+
+    <!-- User 객체 매핑 -->
+    <association property="user" javaType="model.User">
+        <id property="user_id" column="user_id"/>
+    </association>
+</resultMap>
+
+    <select id="getInquireDetail" parameterType="Integer" resultMap="getInquireReserv">
+		select i.* from bb_inq_tbl i 
+		where inquire_id = #{inquire_id}
+    </select>
+    
+    <resultMap type="model.Inquire" id="getInquireReserv">
+    	<id property="inquire_id" column="inquire_id"/>
+    	<result property="user.user_id" column="user_id"/>
+    	<result property="reservation.reservation_id" column="reservation_id"/>
+    	<result property="status" column="status"/>
+    	<result property="i_date" column="i_date"/>
+    	<result property="group_id" column="group_id"/>
+    	<result property="parent_id" column="parent_id"/>
+    	<result property="order_no" column="order_no"/>
+    	<result property="title" column="title"/>
+    	<result property="content" column="content"/>
+    
+    
+    </resultMap>
+
+    <update id="updateInquire" parameterType="model.Inquire">
+        UPDATE bb_inq_tbl
+        SET title=#{title}, content = #{content}
+        WHERE inquire_id = #{inquire_id}
+    </update>
+
+    <select id="getInquireCountByUser" resultType="Integer" parameterType="model.Inquire">
+        SELECT COUNT(*) FROM bb_inq_tbl where user_id = #{userId}
+            </select>
+
+    <select id="getMaxNum" resultType="Integer">
+        SELECT MAX(inquire_id) FROM bb_inq_tbl
+    </select>
+
+	<select id="getInquireCountAll" resultType="Integer">
+    	SELECT COUNT(*) FROM bb_inq_tbl
+	</select>
+	
+	<select id= "getReplyCount" parameterType="Integer" resultType="Integer">
+	select count(*) from bb_inq_tbl where parent_id = (select inquire_id from bb_inq_tbl where inquire_id = #{id})
+	</select>
+	<update id="updateOrderNo" parameterType="model.Inquire">
+		update bb_inq_tbl set order_no = order_no + 1
+		where group_id = #{group_id} and order_no >= #{order_no}
+	</update>
+	<delete id="deleteInquire" parameterType="Integer">
+    DELETE FROM bb_inq_tbl WHERE inquire_id = #{inquire_id} or parent_id = #{inquire_id}
+	</delete>
+	<update id="modifyInquireStatus" parameterType="model.Inquire">
+	update bb_inq_tbl set status = #{status} 
+	where inquire_id = #{inquire_id} 
+	</update>
+	<select id="getOriginalUser" parameterType="Integer" resultType="model.User">
+    SELECT u.*
+    FROM bb_user_tbl u
+    JOIN bb_inq_tbl i ON u.user_id = i.user_id
+    WHERE i.inquire_id = #{inquire_id}
+	</select>
+	
+</mapper>	

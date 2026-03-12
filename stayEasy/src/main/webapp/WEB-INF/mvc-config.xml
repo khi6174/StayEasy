@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Uncomment and your base-package here:
+         <context:component-scan
+            base-package="org.springframework.samples.web"/>  -->
+	<bean id="datasource"  
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		p:username="dudcks"
+		p:password="dudcks"
+		p:url="jdbc:oracle:thin:@172.141.248.143:1521:xe"
+		p:driverClassName="oracle.jdbc.driver.OracleDriver">
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
+		p:configLocation="classpath:mybatisConfig.xml"
+		p:dataSource-ref="datasource">
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	
+	<bean id="entityManagerFactory" 
+	class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean"
+		p:persistenceUnitName="stayEasy"></bean>
+	
+
+	<context:component-scan base-package="controller,model,dao,utils,pwdEncoder,mail"></context:component-scan>
+	
+    <mvc:annotation-driven />
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	        <!-- Example: a logical view name of 'showMessage' is mapped to '/WEB-INF/jsp/showMessage.jsp' -->
+	        <property name="prefix" value="/stay/"/>
+	        <property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<bean id="messageSource" 
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>message</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="multipartResolver" 
+	class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		p:maxInMemorySize="5242880"
+		p:maxUploadSize="5242880"></bean>
+
+</beans>

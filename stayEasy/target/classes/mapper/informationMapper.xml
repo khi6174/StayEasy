@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="informationMapper">
+
+	<select id="getUserPwd" parameterType="String" resultType="String">
+	select user_pwd from bb_user_tbl where user_id = #{user_id}
+	</select>
+
+	<update id="changeUserPwd" parameterType="model.LoginUser">
+	update bb_user_tbl set user_pwd = #{password}
+	where user_id = #{id}
+	</update>
+
+	<delete id="deleteReserv" parameterType="String">
+		delete bb_reserv_tbl where reservation_id = #{reservation_id}
+	</delete>
+
+	<select id="getReservList" parameterType="String" resultMap="getReservMap">
+		select e.*, r.*, a.accname, a.accommodation_id  <!-- 숙소 정보 추가 -->
+		from bb_reserv_tbl e
+		join bb_room_tbl r on e.room_id = r.room_id
+		join bb_acc_tbl a on r.accommodation_id = a.accommodation_id  <!-- 숙소 테이블 조인 -->
+		where e.user_id = #{user_id} and a.app_status = '1'
+	</select>
+
+
+	<select id="getUser" parameterType="String" resultType="model.UserInfo">
+		select * from bb_user_tbl where user_id = #{user_id}
+	</select>
+	
+	<update id="updateInfo" parameterType="model.UserInfo">
+        update bb_user_tbl set username = #{username}, email = #{email}, phone = #{phone}, addr = #{addr}, 
+        birth = #{birth}, gender = #{gender}
+        WHERE user_id = #{user_id}
+    </update>
+    
+	<resultMap type="model.Reservation" id="getReservMap">
+		<id property="reservation_id" column="reservation_id"/>
+		<result property="user.user_id" column="user_id"/>
+		<result property="count" column="count"/>
+		<result property="total_price" column="total_price"/>
+		<result property="check_in_date" column="check_in_date"/>
+		<result property="check_out_date" column="check_out_date"/>
+		<result property="r_date" column="r_date"/>
+		
+		<association property="room" javaType="model.Room">
+			<id property="id.roomId" column="room_id"/>
+			<id property="id.accommodationId" column="accommodation_id"/>
+			<result property="room_image" column="room_image"/>
+			<result property="name" column="name"/>
+			<result property="price_per_night" column="price_per_night"/>
+			
+			<!-- 숙소 정보 매핑 추가 -->
+			<association property="accommodation" javaType="model.Accommodation">
+			<id property="accommodation_id" column="accommodation_id"/>
+			<result property="accname" column="accname"/>  
+			</association>
+    	</association>
+		
+	</resultMap>
+
+</mapper>

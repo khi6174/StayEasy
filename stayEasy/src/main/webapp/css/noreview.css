@@ -1,0 +1,55 @@
+@charset "EUC-KR";
+	/* 전체 페이지 스타일 (기존 페이지와 동일하게) */
+	body {
+		font-family: Arial, sans-serif;
+		background-color: #f8f9fa;
+		margin: 0;
+		padding: 0;
+	}
+	
+	/* 컨텐츠 정렬 (기존 페이지와 일치하도록 설정) */
+	.wrapper {
+		width: 100%;
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 100px 20px; /* 상단 여백 추가 */
+		text-align: center;
+	}
+	
+	/* 컨테이너 박스 (리뷰 목록과 같은 스타일) */
+	.container {
+		display: inline-block;
+		width: 450px; /* 기존 페이지와 크기 맞추기 */
+		padding: 30px;
+		background-color: #ffffff;
+		border-radius: 12px;
+		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	}
+	
+	h2 {
+		font-size: 26px;
+		font-weight: bold;
+		margin-bottom: 15px;
+	}
+	
+	p {
+		font-size: 18px;
+		color: #333;
+		margin-bottom: 20px;
+	}
+	
+	/* 버튼 스타일 (기존 스타일과 동일) */
+	.btn {
+		display: inline-block;
+		padding: 14px 30px;
+		text-decoration: none;
+		color: white;
+		background-color: #007BFF;
+		border-radius: 6px;
+		font-size: 18px;
+		font-weight: bold;
+	}
+	
+	.btn:hover {
+		background-color: #0056b3;
+	}

@@ -1,0 +1,111 @@
+@charset "EUC-KR";
+	body {
+		font-family: Arial, sans-serif;
+		text-align: center;
+		background-color: #f8f9fa;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.container {
+		width: 80%;
+		margin: auto;
+		padding: 20px;
+	}
+	
+	.review-container {
+		background-color: #90EE90; /* 연한 초록색 */
+		padding: 20px;
+		border-radius: 10px;
+		margin-top: 20px;
+		max-height: 500px; /* 리뷰 목록 최대 높이 */
+		overflow-y: auto; /* 스크롤 추가 */
+	}
+	
+	.review-box {
+		background-color: white;
+		padding: 15px;
+		margin-bottom: 15px;
+		border-radius: 10px;
+		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+		text-align: left;
+	}
+	
+	.review-user {
+		font-weight: bold;
+		font-size: 18px;
+		color: #333;
+	}
+	
+	.review-room {
+		font-size: 14px;
+		color: #555;
+	}
+	
+	.review-dates {
+		font-size: 14px;
+		color: #666;
+	}
+	
+	.review-rating {
+		font-size: 18px;
+		font-weight: bold;
+		color: #FF6600;
+	}
+	
+	.review-content {
+		font-size: 16px;
+		margin-top: 10px;
+	}
+	
+	.review-date {
+		font-size: 14px;
+		color: #888;
+	}
+	
+	/* 리뷰 작성 버튼 */
+	.write-button {
+		background-color: #28a745;
+		color: white;
+		border: none;
+		padding: 10px 15px;
+		cursor: pointer;
+		font-size: 14px;
+		border-radius: 5px;
+		margin-bottom: 10px;
+	}
+	
+	.write-button:hover {
+		background-color: #218838;
+	}
+	
+	/* 삭제 버튼 스타일 */
+	.delete-button a {
+		display: inline-block; /* 버튼처럼 동작 */
+		background-color: #dc3545; /* 붉은색 (기존 파란색 변경) */
+		color: white;
+		padding: 8px 12px;
+		font-size: 14px;
+		font-weight: bold;
+		text-decoration: none;
+		border-radius: 5px;
+		transition: background-color 0.3s ease-in-out;
+	}
+	
+	.delete-button a:hover {
+		background-color: #c82333; /* 마우스 올릴 때 좀 더 진한 붉은색 */
+	}
+	.overall-rating {
+		font-size: 20px;
+		font-weight: bold;
+		margin-bottom: 10px;
+	}
+	
+	/* 리뷰가 없을 때 메시지 스타일 */
+	.no-reviews {
+		font-size: 18px;
+		font-weight: bold;
+		color: #black;
+		padding: 20px;
+		text-align: center;
+	}
